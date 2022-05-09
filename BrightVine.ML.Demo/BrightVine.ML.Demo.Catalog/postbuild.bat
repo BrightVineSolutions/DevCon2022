@@ -1,1 +1,1 @@
-xcopy "%~dp0bin\debug\BrightVine.ML.Demo.Catalog.DLL" "D:\BBCRM\APP\STOCK40SP24\bbappfx\vroot\bin\custom\" /e /y /r
+xcopy "%~dp0bin\debug\*.*" "D:\Environments\BBCRM40SP30\APP\bbappfx\vroot\bin\custom\" /e /y /r

@@ -1,0 +1,25 @@
+﻿<SQLStoredProcedureSpec
+	xmlns="bb_appfx_sqlstoredprocedure"
+	xmlns:c="bb_appfx_commontypes"
+	ID="1B3409F6-AB0E-4AF9-A5C6-E8E67518E940"
+	Name="USR_USP_LOADINTERACTIONS"
+	Description="USR_USP_LOADINTERACTIONS"
+	Author="BrightVine Solutions"
+	SPName="USR_USP_LOADINTERACTIONS"
+  GrantServiceRolePermission="true"
+	>
+
+  <CreateProcedureSQL>
+    <![CDATA[
+      create procedure DBO.USR_USP_LOADINTERACTIONS (
+        @PROCESSID uniqueidentifier = null
+      )
+      as
+        begin
+            select ID, OBJECTIVE SENTIMENTTEXT
+            from   [dbo].[INTERACTION]
+            where ISINTERACTION=1;
+        end 
+		]]>
+  </CreateProcedureSQL>
+</SQLStoredProcedureSpec>

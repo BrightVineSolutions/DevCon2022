@@ -1,0 +1,38 @@
+﻿<GlobalChangeSpec
+	xmlns="bb_appfx_globalchange"
+	xmlns:c="bb_appfx_commontypes"
+	ID="3172DCA9-2E85-41C7-80EC-28F8A07DE54D"
+	Name="Interaction Sentiment Analysis"
+	Description="Interaction sentiment analysis."
+	Author="BrightVine Solutions"
+	DisplayName="Interaction Sentiment Analysis"
+	GlobalChangeFolder="BrightVine"
+	>
+
+  <CLRGlobalChange AssemblyName="BrightVine.ML.Demo.Catalog" ClassName="BrightVine.ML.Demo.InteractionSentimentAnalysisGlobalChange" />
+
+  <ParametersFormMetaData>
+    <FormMetaData xmlns="bb_appfx_commontypes">
+      <FormFields>
+        <FormField FieldID="ACTION" Caption="Action" DataType="Integer" Required="true">
+          <c:ValueList>
+            <c:Items>
+              <c:Item>
+                <c:Value>0</c:Value>
+                <c:Label>Create and Train Machine Learning Model</c:Label>
+              </c:Item>
+              <c:Item>
+                <c:Value>1</c:Value>
+                <c:Label>Add or Update Sentiment Attribute Values</c:Label>
+              </c:Item>
+              <c:Item>
+                <c:Value>2</c:Value>
+                <c:Label>Clear Sentiment Attribute Values</c:Label>
+              </c:Item>
+            </c:Items>
+          </c:ValueList>
+        </FormField>
+      </FormFields>
+    </FormMetaData>
+  </ParametersFormMetaData>
+</GlobalChangeSpec>
