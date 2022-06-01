@@ -1,0 +1,48 @@
+﻿<SQLStoredProcedureSpec
+	xmlns="bb_appfx_sqlstoredprocedure"
+	xmlns:c="bb_appfx_commontypes" 
+	ID="71888528-7f48-4397-8c83-a44ab7e3c3d3"
+	Name="USR_USP_BVDL_GETIMPORTSUMMARYFORPREDICTION"
+	Description="REPLACE_WITH_DESCRIPTION"
+	Author="BrightVine Solutions"
+	SPName="USR_USP_BVDL_GETIMPORTSUMMARYFORPREDICTION"
+	>
+
+	<CreateProcedureSQL>
+		<![CDATA[
+create procedure dbo.USR_USP_BVDL_GETIMPORTSUMMARYFORPREDICTION (@IMPORTID UNIQUEIDENTIFIER)
+as
+begin
+
+DECLARE @IMPORTINSTANCEID UNIQUEIDENTIFIER = (SELECT TOP 1 ID FROM USR_BVDL_IMPORTINSTANCE WHERE IMPORTID = @IMPORTID ORDER BY DATEADDED DESC)
+--drop table #temp_counts
+declare @IMPORTSUMMARY xml
+exec USR_USP_BVDL_IMPORTSUMMARY_VIEW @IMPORTINSTANCEID, @IMPORTSUMMARY = @IMPORTSUMMARY output
+--select @IMPORTSUMMARY
+
+SELECT 
+  ref.value('DISPLAYNAME[1]', 'NVARCHAR(50)') AS NAME ,
+  ref.value('NUMBEROFRECORDS[1]', 'int') AS RECORD_COUNT 
+into #temp_counts
+FROM @IMPORTSUMMARY.nodes('/IMPORTSUMMARY/ITEM') 
+xmlData( ref )
+
+select 
+	 CAST(ISNULL(max(case when name = 'constituent' then record_count end),0) AS REAL) as constituent_count,
+	 CAST(ISNULL(max(case when name = 'address' then record_count end),0) AS REAL) as address_count,
+	 CAST(ISNULL(max(case when name = 'email' then record_count end),0) AS REAL) as email_count,
+	 CAST(ISNULL(max(case when name = 'phone' then record_count end),0) AS REAL) as phone_count,
+	 CAST(ISNULL(max(case when name = 'revenuebatch' then record_count end),0) AS REAL) as revenue_count,
+	 CAST(ISNULL(max(case when name = 'interaction' then record_count end),0) AS REAL) as interaction_count,
+	 CAST(ISNULL(max(case when name = 'relationship' then record_count end),0) AS REAL) as relationship_count,
+	 CAST(ISNULL(max(case when name = 'constituency' then record_count end),0) AS REAL) as constituency_count,
+	 CAST(ISNULL(max(case when name = 'registration' then record_count end),0) AS REAL) as registration_count,
+	 CAST(ISNULL(max(case when name = 'alternateid' then record_count end),0) AS REAL) as alternateid_count,
+	 CAST(ISNULL(max(case when name = 'education' then record_count end),0) AS REAL) as education_count,
+	 CAST(ISNULL(max(case when name = 'event' then record_count end),0) AS REAL) as event_count
+from #temp_counts
+end
+		]]>
+	</CreateProcedureSQL>
+
+</SQLStoredProcedureSpec>

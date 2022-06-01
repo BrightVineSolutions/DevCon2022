@@ -1,0 +1,182 @@
+﻿<SQLStoredProcedureSpec
+	xmlns="bb_appfx_sqlstoredprocedure"
+	xmlns:c="bb_appfx_commontypes" 
+	ID="b44438a5-aa47-4072-9f01-ba4df56c3d11"
+	Name="USR_USP_BVDL_GETRUNTIMEHISTORY"
+	Description="REPLACE_WITH_DESCRIPTION"
+	Author="BrightVine Solutions"
+	SPName="USR_USP_BVDL_GETRUNTIMEHISTORY"
+	>
+
+	<CreateProcedureSQL>
+		<![CDATA[
+--drop table #temp_times
+CREATE PROCEDURE dbo.USR_USP_BVDL_GETRUNTIMEHISTORY (@RUNTYPE INT)
+AS
+BEGIN
+
+	DECLARE @MAX_TRAINING_SET_SIZE INT = 5000
+
+	CREATE TABLE #temp_times (
+		importinstanceid UNIQUEIDENTIFIER
+		,starttime DATETIME
+		,endtime DATETIME
+		,constituent_count real
+		,address_count real
+		,email_count real
+		,phone_count real
+		,revenue_count real
+		,interaction_count real
+		,relationship_count real
+		,constituency_count real
+		,registration_count real
+		,alternateid_count real
+		,education_count real
+		,event_count real
+		);
+
+	WITH importruns
+	AS (
+		SELECT importinstanceid
+			,starttime
+			,endtime
+			,RUNTYPECODE
+			,ROW_NUMBER() OVER (
+				PARTITION BY importinstanceid
+				,RUNTYPECODE ORDER BY starttime DESC
+				) AS rn
+		FROM USR_BVDL_IMPORTINSTANCERUN
+		WHERE RUNTYPECODE = @RUNTYPE
+		)
+	INSERT INTO #temp_times (
+		importinstanceid
+		,starttime
+		,endtime
+		)
+	SELECT TOP (@MAX_TRAINING_SET_SIZE) IMPORTINSTANCEID
+		,STARTTIME
+		,ENDTIME
+	FROM importruns
+	WHERE rn = 1
+  order by starttime desc
+
+	UPDATE #temp_times
+	SET constituent_count = (
+			SELECT count(1)
+			FROM usr_bvdl_constituent c
+			INNER JOIN usr_bvdl_Stagingsource ss ON ss.id = c.sourceid
+			WHERE ss.importinstanceid = #temp_times.importinstanceid
+			)
+
+	UPDATE #temp_times
+	SET address_count = (
+			SELECT count(1)
+			FROM usr_bvdl_address c
+			INNER JOIN usr_bvdl_Stagingsource ss ON ss.id = c.sourceid
+			WHERE ss.importinstanceid = #temp_times.importinstanceid
+			)
+
+	UPDATE #temp_times
+	SET phone_count = (
+			SELECT count(1)
+			FROM usr_bvdl_phone c
+			INNER JOIN usr_bvdl_Stagingsource ss ON ss.id = c.sourceid
+			WHERE ss.importinstanceid = #temp_times.importinstanceid
+			)
+
+	UPDATE #temp_times
+	SET email_count = (
+			SELECT count(1)
+			FROM usr_bvdl_email c
+			INNER JOIN usr_bvdl_Stagingsource ss ON ss.id = c.sourceid
+			WHERE ss.importinstanceid = #temp_times.importinstanceid
+			)
+
+	UPDATE #temp_times
+	SET revenue_count = (
+			SELECT count(1)
+			FROM usr_bvdl_revenuebatch c
+			INNER JOIN usr_bvdl_Stagingsource ss ON ss.id = c.sourceid
+			WHERE ss.importinstanceid = #temp_times.importinstanceid
+			)
+
+	UPDATE #temp_times
+	SET interaction_count = (
+			SELECT count(1)
+			FROM usr_bvdl_interaction c
+			INNER JOIN usr_bvdl_Stagingsource ss ON ss.id = c.sourceid
+			WHERE ss.importinstanceid = #temp_times.importinstanceid
+			)
+
+	UPDATE #temp_times
+	SET relationship_count = (
+			SELECT count(1)
+			FROM usr_bvdl_relationship c
+			INNER JOIN usr_bvdl_Stagingsource ss ON ss.id = c.sourceid
+			WHERE ss.importinstanceid = #temp_times.importinstanceid
+			)
+
+	UPDATE #temp_times
+	SET constituency_count = (
+			SELECT count(1)
+			FROM usr_bvdl_constituency c
+			INNER JOIN usr_bvdl_Stagingsource ss ON ss.id = c.sourceid
+			WHERE ss.importinstanceid = #temp_times.importinstanceid
+			)
+
+	UPDATE #temp_times
+	SET alternateid_count = (
+			SELECT count(1)
+			FROM usr_bvdl_alternateid c
+			INNER JOIN usr_bvdl_Stagingsource ss ON ss.id = c.sourceid
+			WHERE ss.importinstanceid = #temp_times.importinstanceid
+			)
+
+	UPDATE #temp_times
+	SET education_count = (
+			SELECT count(1)
+			FROM USR_BVDL_EDUCATIONALHISTORY c
+			INNER JOIN usr_bvdl_Stagingsource ss ON ss.id = c.sourceid
+			WHERE ss.importinstanceid = #temp_times.importinstanceid
+			)
+
+	UPDATE #temp_times
+	SET registration_count = (
+			SELECT count(1)
+			FROM USR_BVDL_EVENTREGISTRATION c
+			INNER JOIN usr_bvdl_Stagingsource ss ON ss.id = c.sourceid
+			WHERE ss.importinstanceid = #temp_times.importinstanceid
+			)
+
+	UPDATE #temp_times
+	SET event_count = (
+			SELECT count(1)
+			FROM USR_BVDL_EVENT c
+			INNER JOIN usr_bvdl_Stagingsource ss ON ss.id = c.sourceid
+			WHERE ss.importinstanceid = #temp_times.importinstanceid
+			)
+
+	DELETE
+	FROM #temp_times
+	WHERE constituent_count = 0 AND event_count = 0
+
+	SELECT cast(datediff(second, starttime, endtime) as real)
+		,constituent_count 
+		,address_count 
+		,email_count 
+    ,phone_count 
+		,revenue_count 
+		,interaction_count 
+		,relationship_count 
+		,constituency_count 
+    ,registration_count 
+		,alternateid_count 
+		,education_count 
+		,event_count 
+	FROM #temp_times
+END
+
+		]]>
+	</CreateProcedureSQL>
+
+</SQLStoredProcedureSpec>

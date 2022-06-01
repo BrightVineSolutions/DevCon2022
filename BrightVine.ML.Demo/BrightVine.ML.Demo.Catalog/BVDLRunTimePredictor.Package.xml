@@ -1,0 +1,48 @@
+<PackageSpec 
+    xmlns="bb_appfx_package"
+    xmlns:c="bb_appfx_commontypes"
+    ID="6e5c8ac3-7897-4ae2-8714-f43e62390475"
+    Name="BVDL Run Time Predictor Package"
+    Description="A package defining specs related to bvdl run time predictor records"
+    Author="BrightVine Solutions"
+    >
+
+	<c:DependencyList>
+        <c:Dependency CatalogAssembly="BrightVine.ML.Demo.Catalog.dll" CatalogItem="BrightVine.ML.Demo.Catalog.StoredProcedures.USP_BVDL_GETIMPORTSUMMARYFORPREDICTION.xml" />
+        <c:Dependency CatalogAssembly="BrightVine.ML.Demo.Catalog.dll" CatalogItem="BrightVine.ML.Demo.Catalog.StoredProcedures.USP_BVDL_GETRUNTIMEHISTORY.xml" />
+        <c:Dependency CatalogAssembly="BrightVine.ML.Demo.Catalog.dll" CatalogItem="BrightVine.ML.Demo.Catalog.RecordOperations.TrainBVDLRuntimePredictor.RecordOperation.xml" />
+        <c:Dependency CatalogAssembly="BrightVine.ML.Demo.Catalog.dll" CatalogItem="BrightVine.ML.Demo.Catalog.RecordOperations.TrainBVDLRuntimePredictorFromFile.RecordOperation.xml" />
+        <c:Dependency CatalogAssembly="BrightVine.ML.Demo.Catalog.dll" CatalogItem="BrightVine.ML.Demo.Catalog.ViewDataForms.RuntimePredictions.View.xml" />
+    </c:DependencyList>
+
+  <AlterExistingPages xmlns="bb_appfx_pagedefinition">
+    <AlterPages>
+      <AlterPage PageID="5cdb369e-c6d9-4333-a942-9ef1b8da4239">
+        <AlterOrAddPageActionGroups>
+          <AlterOrAddPageActionGroup ID="16016a45-6776-4d2d-b034-e72f6931960b" Caption="Tasks">
+            <AddAction>
+              <Action ID="f1616f35-f728-45ea-976f-412269336e48" Caption="Train Runtime Predictor Model">
+                <ExecuteRecordOperation RecordOperationID="4fc4564a-5c8c-4d9a-af31-4e8462a4a31b" xmlns="bb_appfx_commontypes">
+                  <ActionContext>
+                    <Expression>= "4fc4564a-5c8c-4d9a-af31-4e8462a4a31b"</Expression>
+                  </ActionContext>
+                </ExecuteRecordOperation>
+              </Action>
+            </AddAction>
+          </AlterOrAddPageActionGroup>
+          <AlterOrAddPageActionGroup ID="16016a45-6776-4d2d-b034-e72f6931960b" Caption="Tasks">
+            <AddAction>
+              <Action ID="A40A1520-F44E-4185-A3EF-F4F240B1BCE0" Caption="Train Runtime Predictor Model From File">
+                <ExecuteRecordOperation RecordOperationID="1919704e-0e69-45be-acaf-180a5f356798" xmlns="bb_appfx_commontypes">
+                  <ActionContext>
+                    <Expression>= "4fc4564a-5c8c-4d9a-af31-4e8462a4a31b"</Expression>
+                  </ActionContext>
+                </ExecuteRecordOperation>
+              </Action>
+            </AddAction>
+          </AlterOrAddPageActionGroup>
+        </AlterOrAddPageActionGroups>
+      </AlterPage>
+    </AlterPages>
+  </AlterExistingPages>
+</PackageSpec>

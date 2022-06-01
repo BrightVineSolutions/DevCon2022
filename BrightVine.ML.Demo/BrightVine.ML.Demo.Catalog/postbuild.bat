@@ -1,1 +1,1 @@
-xcopy "%~dp0bin\debug\*.*" "D:\Environments\BBCRM40SP30\APP\bbappfx\vroot\bin\custom\" /e /y /r
+xcopy "%~dp0bin\debug\*.*" "C:\Program Files\Blackbaud\bbappfx\vroot\bin\Custom" /e /y /r

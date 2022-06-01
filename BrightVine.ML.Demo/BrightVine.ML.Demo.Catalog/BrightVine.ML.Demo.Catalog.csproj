@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.ML.CpuMath.1.5.0\build\netstandard2.0\Microsoft.ML.CpuMath.props" Condition="Exists('..\packages\Microsoft.ML.CpuMath.1.5.0\build\netstandard2.0\Microsoft.ML.CpuMath.props')" />
   <Import Project="..\packages\Microsoft.ML.1.5.0\build\netstandard2.0\Microsoft.ML.props" Condition="Exists('..\packages\Microsoft.ML.1.5.0\build\netstandard2.0\Microsoft.ML.props')" />
-  <Import Project="..\packages\Microsoft.ML.CpuMath.1.7.1\build\netstandard2.0\Microsoft.ML.CpuMath.props" Condition="Exists('..\packages\Microsoft.ML.CpuMath.1.7.1\build\netstandard2.0\Microsoft.ML.CpuMath.props')" />
+  <Import Project="..\packages\Microsoft.ML.CpuMath.1.5.0\build\netstandard2.0\Microsoft.ML.CpuMath.props" Condition="Exists('..\packages\Microsoft.ML.CpuMath.1.5.0\build\netstandard2.0\Microsoft.ML.CpuMath.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -43,6 +42,9 @@
     <CodeAnalysisRuleSet>Catalog.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Blackbaud.AppFx.Server, Version=4.0.3000.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -76,7 +78,12 @@
     <Reference Include="Microsoft.ML.Transforms, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ML.1.5.0\lib\netstandard2.0\Microsoft.ML.Transforms.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.dll</HintPath>
+    </Reference>
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
     </Reference>
@@ -86,7 +93,9 @@
     <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
     </Reference>
-    <Reference Include="System.Data" />
+    <Reference Include="System.Data">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Data.dll</HintPath>
+    </Reference>
     <Reference Include="System.Memory, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.1\lib\netstandard2.0\System.Memory.dll</HintPath>
     </Reference>
@@ -105,6 +114,9 @@
     <Compile Include="GlobalChanges\InteractionSentimentAnalysis.GlobalChange.cs" />
     <Compile Include="HelperClasses\ImpersonationHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RecordOperations\TrainBVDLRuntimePredictor.RecordOperation.cs" />
+    <Compile Include="RecordOperations\TrainBVDLRuntimePredictorFromFile.RecordOperation.cs" />
+    <Compile Include="ViewDataForms\RuntimePredictions.View.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -130,7 +142,13 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="InteractionSentimentAnalysis.Package.xml" />
+    <EmbeddedResource Include="RecordOperations\TrainBVDLRuntimePredictor.RecordOperation.xml" />
+    <EmbeddedResource Include="ViewDataForms\RuntimePredictions.View.xml" />
+    <EmbeddedResource Include="RecordOperations\TrainBVDLRuntimePredictorFromFile.RecordOperation.xml" />
+    <EmbeddedResource Include="BVDLRunTimePredictor.Package.xml" />
     <Content Include="SQL\InteractionAttributeCreationScript.sql" />
+    <EmbeddedResource Include="StoredProcedures\USP_BVDL_GETRUNTIMEHISTORY.xml" />
+    <EmbeddedResource Include="StoredProcedures\USP_BVDL_GETIMPORTSUMMARYFORPREDICTION.xml" />
     <Content Include="TrainingDataSet\SentimentTestData.txt" />
     <EmbeddedResource Include="StoredProcedures\USR_USP_INTERACTIONSENTIMENT_SAVE.xml" />
     <EmbeddedResource Include="StoredProcedures\USR_USP_CLEARINTERACTIONSENTIMENTS.xml" />
@@ -143,10 +161,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.ML.CpuMath.1.7.1\build\netstandard2.0\Microsoft.ML.CpuMath.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.CpuMath.1.7.1\build\netstandard2.0\Microsoft.ML.CpuMath.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.ML.CpuMath.1.5.0\build\netstandard2.0\Microsoft.ML.CpuMath.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.CpuMath.1.5.0\build\netstandard2.0\Microsoft.ML.CpuMath.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.ML.1.5.0\build\netstandard2.0\Microsoft.ML.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.1.5.0\build\netstandard2.0\Microsoft.ML.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.ML.1.5.0\build\netstandard2.0\Microsoft.ML.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.1.5.0\build\netstandard2.0\Microsoft.ML.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.ML.CpuMath.1.5.0\build\netstandard2.0\Microsoft.ML.CpuMath.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.CpuMath.1.5.0\build\netstandard2.0\Microsoft.ML.CpuMath.props'))" />
   </Target>
   <Import Project="..\packages\Microsoft.ML.1.5.0\build\netstandard2.0\Microsoft.ML.targets" Condition="Exists('..\packages\Microsoft.ML.1.5.0\build\netstandard2.0\Microsoft.ML.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
