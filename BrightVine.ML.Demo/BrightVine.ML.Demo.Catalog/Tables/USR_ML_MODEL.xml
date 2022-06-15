@@ -1,0 +1,17 @@
+﻿<TableSpec
+	xmlns="bb_appfx_table"
+	xmlns:c="bb_appfx_commontypes"
+	ID="98F57A0B-FC9F-4835-AFEE-CA24AD271241"
+	Name="Machine Learning Model"
+	Description="Stores information about machine learning model."
+	Author="BrightVine Solutions"
+	Tablename="USR_ML_MODEL"
+	IsBuiltIn="false"
+	>
+  <Fields>
+    <GuidField Name="PROCESSID" IsUnique="true"/>
+    <TextField Name="NAME" Length="100"/>
+    <TextField Name="DESCRIPTION" Length="255"/>
+    <BinaryField Name="MODEL"/>
+  </Fields>
+</TableSpec>

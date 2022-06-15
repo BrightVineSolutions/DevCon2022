@@ -1,0 +1,68 @@
+<PackageSpec 
+    xmlns="bb_appfx_package"
+    xmlns:c="bb_appfx_commontypes"
+    ID="100d8714-2dc5-428f-9dad-236002b971b7"
+    Name="Interaction Sentiment Analysis Package"
+    Description="A package defining specs related to interaction sentiment analysis records"
+    Author="BrightVine Solutions"
+    >
+
+	<!-- Note:  the order of the items listed here is important.  For example, you won't be able to load a data form that references 
+	a table that hasn't been loaded, etc.  In general, the following order is recommended:
+	
+		(functions and procedures first)
+		SQLFunctionSpec
+		SQLStoredProcedureSpec
+		TranslationFunctionSpec
+
+		(tables next)
+		CodeTableSpec
+		TableSpec
+		SQLViewSpec
+
+		(features next)
+		SimpleDataListSpec		
+		SearchListSpec
+		RecordOperationSpec
+		DataListSpec
+		
+		(forms next)
+		AddDataFormTemplateSpec
+		EditDataFormTemplateSpec
+		ViewDataFormTemplateSpec		
+
+		(more feature types)
+		BatchTypeSpec
+		BusinessProcessSpec
+		CalendarSpec
+		FlashDashSpec
+		GlobalChangeSpec
+		IDMapperSpec
+		KpiSpec
+		MapEntitySpec
+		MergeConfiguration
+		MergeTaskSpec
+		QueryViewSpec
+		ReportSpec
+		RelationshipMapSpec
+		SmartFieldSpec
+		SmartQuerySpec
+		WorkflowInboxSpec
+		WorkflowSpec
+		
+		(functional areas, pages, and tasks last)
+		PageDefinitionSpec
+		FunctionalAreaSpec
+		TaskSpec	
+	-->
+	
+	<c:DependencyList>
+    <c:Dependency CatalogAssembly="BrightVine.ML.Demo.Catalog.dll" CatalogItem="BrightVine.ML.Demo.Catalog.Tables.USR_ML_MODEL.xml" />
+    <c:Dependency CatalogAssembly="BrightVine.ML.Demo.Catalog.dll" CatalogItem="BrightVine.ML.Demo.Catalog.StoredProcedures.USR_USP_CLEARINTERACTIONSENTIMENTS.xml" />
+    <c:Dependency CatalogAssembly="BrightVine.ML.Demo.Catalog.dll" CatalogItem="BrightVine.ML.Demo.Catalog.StoredProcedures.USR_USP_INTERACTIONSENTIMENT_SAVE.xml" />
+    <c:Dependency CatalogAssembly="BrightVine.ML.Demo.Catalog.dll" CatalogItem="BrightVine.ML.Demo.Catalog.StoredProcedures.USR_USP_LOADINTERACTIONS.xml" />
+    <c:Dependency CatalogAssembly="BrightVine.ML.Demo.Catalog.dll" CatalogItem="BrightVine.ML.Demo.Catalog.StoredProcedures.USR_USP_ML_MODEL_LOAD.xml" />
+    <c:Dependency CatalogAssembly="BrightVine.ML.Demo.Catalog.dll" CatalogItem="BrightVine.ML.Demo.Catalog.StoredProcedures.USR_USP_ML_MODEL_SAVE.xml" />
+    <c:Dependency CatalogAssembly="BrightVine.ML.Demo.Catalog.dll" CatalogItem="BrightVine.ML.Demo.Catalog.GlobalChanges.InteractionSentimentAnalysis.GlobalChange.xml" />  
+  </c:DependencyList>
+</PackageSpec>

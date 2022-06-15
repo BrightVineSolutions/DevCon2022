@@ -1,0 +1,25 @@
+﻿<RecordOperationSpec 
+	xmlns="bb_appfx_recordoperation"
+	xmlns:c="bb_appfx_commontypes" 
+	ID="4fc4564a-5c8c-4d9a-af31-4e8462a4a31b" 
+	Name="Train BVDL Runtime Predictor Record Operation"
+	Description="Build BVDL Runtime Predictor Model"
+	Author="BrightVine Solutions"
+	OperationType="Update"
+	RecordType="BVDL"
+	c:SecurityUIFolder="BVDL"
+	>
+
+	<!-- indicate the server-side catalog implementation that will be used to execute the record operation.  This should refer to a class
+	that inherits AppCatalog.AppRecordOperationPerform.
+	 -->
+	<CLRRecord>
+		<CLRRecordOperation AssemblyName="BrightVine.ML.Demo.Catalog" ClassName="BrightVine.ML.Demo.Catalog.RecordOperations.TrainBVDLRuntimePredictorRecordOperation" />
+	</CLRRecord>
+
+	<!-- optionally, offer a prompt before executing the record operation -->
+	<Prompt>
+		<StandardPrompt Text="Are you sure you want to overwrite the current model?" />
+	</Prompt>
+
+</RecordOperationSpec>
