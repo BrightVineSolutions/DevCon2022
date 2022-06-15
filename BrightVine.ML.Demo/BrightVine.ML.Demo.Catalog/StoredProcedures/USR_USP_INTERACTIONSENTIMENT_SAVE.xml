@@ -1,0 +1,63 @@
+﻿<SQLStoredProcedureSpec
+	xmlns="bb_appfx_sqlstoredprocedure"
+	xmlns:c="bb_appfx_commontypes"
+	ID="EE7FA2D0-8CF8-44FD-9365-01D6D12F2C22"
+	Name="USR_USP_INTERACTIONSENTIMENT_SAVE"
+	Description="USR_USP_INTERACTIONSENTIMENT_SAVE"
+	Author="BrightVine Solutions"
+	SPName="USR_USP_INTERACTIONSENTIMENT_SAVE" 
+  GrantServiceRolePermission="true"
+	>
+
+  <CreateProcedureSQL>
+    <![CDATA[
+    create procedure DBO.USR_USP_INTERACTIONSENTIMENT_SAVE
+      @ID            uniqueidentifier = null,
+      @SENTIMENTTEXT nvarchar(100) = ''
+    as
+      begin
+          set NOCOUNT on;
+
+          declare @CHANGEAGENTID uniqueidentifier;
+          declare @CURRENTDATE datetime = GETDATE();
+
+          if @CHANGEAGENTID is null
+            exec DBO.USP_CHANGEAGENT_GETORCREATECHANGEAGENT
+              @CHANGEAGENTID OUTPUT;
+
+          begin TRY
+              update [ATTRIBUTE46CBFF179A07471D8ADB4E5C38CFAB9A]
+              set    [VALUE] = @SENTIMENTTEXT
+              where  ID = @ID;
+
+              if @@rowcount = 0
+                insert into [dbo].[ATTRIBUTE46CBFF179A07471D8ADB4E5C38CFAB9A]
+                            ([ID],
+                             [VALUE],
+                             [COMMENT],
+                             [STARTDATE],
+                             [ENDDATE],
+                             [ADDEDBYID],
+                             [CHANGEDBYID],
+                             [DATEADDED],
+                             [DATECHANGED])
+                values      ( @ID,
+                              @SENTIMENTTEXT,
+                              '',
+                              null,
+                              null,
+                              @CHANGEAGENTID,
+                              @CHANGEAGENTID,
+                              @CURRENTDATE,
+                              @CURRENTDATE )
+          end TRY
+          begin CATCH
+              exec DBO.USP_RAISE_ERROR
+              return 1
+          end CATCH
+
+          return 0;
+      end 
+		]]>
+  </CreateProcedureSQL>
+</SQLStoredProcedureSpec>

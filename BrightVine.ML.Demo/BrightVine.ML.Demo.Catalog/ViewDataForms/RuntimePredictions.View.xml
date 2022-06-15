@@ -1,0 +1,26 @@
+﻿<ViewDataFormTemplateSpec 
+	xmlns="bb_appfx_viewdataformtemplate" 
+	xmlns:c="bb_appfx_commontypes" 
+	ID="86b93f60-7492-45a5-88e4-49495c166060" 
+	Name="BVDL Runtime Predictions View Data Form"
+	Description="A data form for viewing BVDL runtime predictions"
+	Author="BrightVine Solutions"
+	DataFormInstanceID="f3712d8e-7d9c-435c-a5b9-54b442b5264a" 
+	RecordType="Business Process Parameter Set"
+	c:SecurityUIFolder="BVDL"
+	>
+
+	<!-- indicate the server-side catalog implementation that will be used to load this form.  This should refer to a class
+	that inherits AppCatalog.AppViewDataForm.
+	 -->
+	<CLRDataForm AssemblyName="BrightVine.ML.Demo.Catalog" ClassName="BrightVine.ML.Demo.Catalog.RuntimePredictionsViewDataForm" />
+
+	<!-- describe fields on the form, which correspond to public fields on the class.  Note that system paramters 
+	like the context ID, DATALOADED, and CURRENTAPPUSERID need not be listed. -->
+	<FormMetaData xmlns="bb_appfx_commontypes">
+		<FormFields>
+			<FormField FieldID="VALIDATIONRUNTIME" Caption="Predicted Validation Time" DataType="String" MaxLength="100" />
+		</FormFields>
+	</FormMetaData>
+  <c:DataFormExtension DataFormInstanceID="d720f8de-fe9d-4a77-bac5-2338f7f456b7" RenderStyle="AfterParent" TabCaption="Predicted Runtimes" />
+</ViewDataFormTemplateSpec>

@@ -1,0 +1,22 @@
+﻿<SQLStoredProcedureSpec
+	xmlns="bb_appfx_sqlstoredprocedure"
+	xmlns:c="bb_appfx_commontypes"
+	ID="31393666-72BA-4C95-9B2E-0034C7C6EDB0"
+	Name="USR_USP_CLEARINTERACTIONSENTIMENTS"
+	Description="USR_USP_CLEARINTERACTIONSENTIMENTS"
+	Author="BrightVine Solutions"
+	SPName="USR_USP_CLEARINTERACTIONSENTIMENTS"
+  GrantServiceRolePermission="true"
+	>
+
+  <CreateProcedureSQL>
+    <![CDATA[
+      create procedure DBO.USR_USP_CLEARINTERACTIONSENTIMENTS
+      as
+        begin
+            delete from [dbo].[ATTRIBUTE46CBFF179A07471D8ADB4E5C38CFAB9A];
+            return 0;
+        end 
+		]]>
+  </CreateProcedureSQL>
+</SQLStoredProcedureSpec>

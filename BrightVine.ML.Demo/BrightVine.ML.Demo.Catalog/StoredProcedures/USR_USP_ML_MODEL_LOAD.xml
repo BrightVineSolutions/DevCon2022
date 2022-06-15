@@ -1,0 +1,25 @@
+﻿<SQLStoredProcedureSpec
+	xmlns="bb_appfx_sqlstoredprocedure"
+	xmlns:c="bb_appfx_commontypes"
+	ID="5168EEB7-40A6-4466-A1FE-EFDBD8AD6CE8"
+	Name="USR_USP_ML_MODEL_LOAD"
+	Description="USR_USP_ML_MODEL_LOAD"
+	Author="BrightVine Solutions"
+	SPName="USR_USP_ML_MODEL_LOAD"
+  GrantServiceRolePermission="true"
+	>
+
+  <CreateProcedureSQL>
+    <![CDATA[
+      create procedure DBO.USR_USP_ML_MODEL_LOAD (
+        @PROCESSID uniqueidentifier = null
+      )
+      as
+        begin
+            select MODEL
+            from   [dbo].[USR_ML_MODEL]
+            where  PROCESSID = @PROCESSID;
+        end 
+		]]>
+  </CreateProcedureSQL>
+</SQLStoredProcedureSpec>
