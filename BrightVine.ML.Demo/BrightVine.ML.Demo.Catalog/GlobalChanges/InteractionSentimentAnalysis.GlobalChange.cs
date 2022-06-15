@@ -44,70 +44,38 @@ namespace BrightVine.ML.Demo
             return result;
         }
 
-        private int ClearInteractionSentimentAttributeValues()
+        #region Create & Save Model
+        private int CreateAndSaveModel()
         {
-            int recordCount = 0;
-            using (SqlConnection con = new SqlConnection(ConnectionString))
+            int result = 0;
+            TrainTestData splitDataView = LoadData();
+
+            ITransformer model = BuildAndTrainModel(splitDataView.TrainSet);
+
+            using (var stream = new MemoryStream())
             {
-                using (SqlCommand cmd = new SqlCommand("dbo.USR_USP_CLEARINTERACTIONSENTIMENTS", con))
+                MLCntx.Model.Save(model, splitDataView.TrainSet.Schema, stream);
+                byte[] modelObject = stream.ToArray();
+
+                using (SqlConnection con = new SqlConnection(ConnectionString))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    con.Open();
-                    recordCount = cmd.ExecuteNonQuery();
-                    
-                }
-            }
-            return recordCount;
-        }
-
-        private int UpsertInteractionSentimentAttributeValues()
-        {
-            int recordCount = 0;
-            ITransformer model = LoadModel();
-
-            using (SqlConnection con = new SqlConnection(ConnectionString))
-            {
-                using (SqlCommand cmd = new SqlCommand("dbo.USR_USP_LOADINTERACTIONS", con))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    con.Open();
-
-                    using (SqlDataReader rdr = cmd.ExecuteReader())
+                    using (SqlCommand cmd = new SqlCommand("dbo.USR_USP_ML_MODEL_SAVE", con))
                     {
-                        while (rdr.Read())
-                        {
-                            recordCount++;
-                            Guid InterationId = rdr.GetGuid(0);
-                            string interaction = rdr.GetString(1);
+                        cmd.CommandType = CommandType.StoredProcedure;
 
-                            InteractionSentiment interactionSentimentObject = GetInteractionSentiment(model, interaction);
-                            string interactionSentiment;
-                            interactionSentiment = interactionSentimentObject.Prediction ? "Positive" : "Negative";
-                            interactionSentiment = interactionSentiment + " interaction with a probability of: " + interactionSentimentObject.Probability;
+                        cmd.Parameters.Add("@PROCESSID", SqlDbType.UniqueIdentifier).Value = PROCESSID;
+                        cmd.Parameters.Add("@NAME", SqlDbType.NVarChar).Value = MODELNAME;
+                        cmd.Parameters.Add("@DESCRIPTION", SqlDbType.NVarChar).Value = MODELDESCRIPTION;
+                        cmd.Parameters.Add("@MODEL", SqlDbType.VarBinary).Value = modelObject;
 
-                            SaveInteractionSentiment(InterationId, interactionSentiment);
-                        }
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+
+                        result = 1;
                     }
                 }
             }
-            return recordCount;
-        }
-
-        private void SaveInteractionSentiment(Guid interactionId, string interactionSentiment)
-        {
-            using (SqlConnection con = new SqlConnection(ConnectionString))
-            {
-                using (SqlCommand cmd = new SqlCommand("dbo.USR_USP_INTERACTIONSENTIMENT_SAVE", con))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-
-                    cmd.Parameters.Add("@ID", SqlDbType.UniqueIdentifier).Value = interactionId;
-                    cmd.Parameters.Add("@SENTIMENTTEXT", SqlDbType.NVarChar).Value = interactionSentiment;
-
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                }
-            }
+            return result;
         }
 
         private TrainTestData LoadData()
@@ -149,57 +117,46 @@ namespace BrightVine.ML.Demo
 
             return model;
         }
+        #endregion
 
-        /* Used for testing
-        private void Evaluate(ITransformer model, IDataView splitTestSet)
+        #region Upsert Interaction Sentiment Attribute Values
+        private int UpsertInteractionSentimentAttributeValues()
         {
-            IDataView predictions = model.Transform(splitTestSet);
-            CalibratedBinaryClassificationMetrics metrics = MLCntx.BinaryClassification.Evaluate(predictions, "Label");
-        }
-        */
+            int recordCount = 0;
+            ITransformer model = LoadModel();
 
-        private InteractionSentiment GetInteractionSentiment(ITransformer model, string sentimentText)
-        {
-            Interaction sampleStatement = new Interaction
+            using (SqlConnection con = new SqlConnection(ConnectionString))
             {
-                SentimentText = sentimentText
-            };
-
-            PredictionEngine<Interaction, InteractionSentiment> predictionFunction = MLCntx.Model.CreatePredictionEngine<Interaction, InteractionSentiment>(model);
-            return  predictionFunction.Predict(sampleStatement);
-        }
-
-        private int CreateAndSaveModel()
-        {
-            int result = 0;
-            TrainTestData splitDataView = LoadData();
-
-            ITransformer model = BuildAndTrainModel(splitDataView.TrainSet);
-
-            using (var stream = new MemoryStream())
-            {
-                MLCntx.Model.Save(model, splitDataView.TrainSet.Schema, stream);
-                byte[] modelObject = stream.ToArray();
-
-                using (SqlConnection con = new SqlConnection(ConnectionString))
+                using (SqlCommand cmd = new SqlCommand("dbo.USR_USP_LOADINTERACTIONS", con))
                 {
-                    using (SqlCommand cmd = new SqlCommand("dbo.USR_USP_ML_MODEL_SAVE", con))
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    con.Open();
+
+                    using (SqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        cmd.CommandType = CommandType.StoredProcedure;
+                        while (rdr.Read())
+                        {
+                            recordCount++;
+                            Guid InterationId = rdr.GetGuid(0);
+                            string interaction = rdr.GetString(1);
 
-                        cmd.Parameters.Add("@PROCESSID", SqlDbType.UniqueIdentifier).Value = PROCESSID;
-                        cmd.Parameters.Add("@NAME", SqlDbType.NVarChar).Value = MODELNAME;
-                        cmd.Parameters.Add("@DESCRIPTION", SqlDbType.NVarChar).Value = MODELDESCRIPTION;
-                        cmd.Parameters.Add("@MODEL", SqlDbType.VarBinary).Value = modelObject;
+                            InteractionSentiment interactionSentimentObject = GetInteractionSentiment(model, interaction);
+                            string interactionSentiment;
+                            if (interactionSentimentObject.Prediction)
+                            {
+                                interactionSentiment = "Postive sentiment with a probability of " + interactionSentimentObject.Probability.ToString("#0.##%");
+                            }
+                            else
+                            {
+                                interactionSentiment = "Negative sentiment with a probability of " + (1 - interactionSentimentObject.Probability).ToString("#0.##%");
+                            }
 
-                        con.Open();
-                        cmd.ExecuteNonQuery();
-
-                        result = 1;
+                            SaveInteractionSentiment(InterationId, interactionSentiment);
+                        }
                     }
                 }
             }
-            return result;
+            return recordCount;
         }
 
         private ITransformer LoadModel()
@@ -236,6 +193,54 @@ namespace BrightVine.ML.Demo
             return model;
         }
 
+        private InteractionSentiment GetInteractionSentiment(ITransformer model, string sentimentText)
+        {
+            Interaction sampleStatement = new Interaction
+            {
+                SentimentText = sentimentText
+            };
+
+            PredictionEngine<Interaction, InteractionSentiment> predictionFunction = MLCntx.Model.CreatePredictionEngine<Interaction, InteractionSentiment>(model);
+            return predictionFunction.Predict(sampleStatement);
+        }
+
+        private void SaveInteractionSentiment(Guid interactionId, string interactionSentiment)
+        {
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("dbo.USR_USP_INTERACTIONSENTIMENT_SAVE", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@ID", SqlDbType.UniqueIdentifier).Value = interactionId;
+                    cmd.Parameters.Add("@SENTIMENTTEXT", SqlDbType.NVarChar).Value = interactionSentiment;
+
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        #endregion
+
+        #region Clear Interaction Sentiment Attribute Values
+        private int ClearInteractionSentimentAttributeValues()
+        {
+            int recordCount = 0;
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("dbo.USR_USP_CLEARINTERACTIONSENTIMENTS", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    con.Open();
+                    recordCount = cmd.ExecuteNonQuery();
+
+                }
+            }
+            return recordCount;
+        }
+        #endregion
+
+        #region POCO Entities
         public class Interaction
         {
             [LoadColumn(0)]
@@ -244,12 +249,21 @@ namespace BrightVine.ML.Demo
             public bool Sentiment { get; set; }
         }
 
-        public class InteractionSentiment: Interaction
+        public class InteractionSentiment : Interaction
         {
             [ColumnName("PredictedLabel")]
             public bool Prediction { get; set; }
             public float Probability { get; set; }
             public float Score { get; set; }
         }
+        #endregion
+
+        /* Used for testing
+        private void Evaluate(ITransformer model, IDataView splitTestSet)
+        {
+            IDataView predictions = model.Transform(splitTestSet);
+            CalibratedBinaryClassificationMetrics metrics = MLCntx.BinaryClassification.Evaluate(predictions, "Label");
+        }
+        */
     }
 }
