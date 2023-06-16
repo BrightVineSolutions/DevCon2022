@@ -1,0 +1,36 @@
+﻿<GlobalChangeSpec
+	xmlns="bb_appfx_globalchange"
+	xmlns:c="bb_appfx_commontypes"
+	ID="fba76d01-0a8b-4975-9c41-ce585eb66730"
+	Name="Contact Report AI Validation"
+	Description="Contact Report AI Validation"
+	Author="BrightVine Solutions"
+	DisplayName="Contact Report AI Validation Global Change"
+	GlobalChangeFolder="BrightVine Solutions"
+	>
+
+	<!-- indicate the server-side catalog implementation that will be used to process the global change.  This should refer to a class
+	that inherits AppCatalog.AppGlobalChangeProcess.
+	 -->
+	<CLRGlobalChange AssemblyName="BrightVine.ML.Demo.Catalog"  ClassName="BrightVine.ML.Demo.GenerativeAIGlobalChange" />
+
+	<ParametersFormMetaData>
+
+		<!-- describe fields on the parameter form, which correspond to public fields on the class.  Note that system parameters 
+		like the context @CHANGEAGENTID, @ASOF, @NUMBERADDED, @NUMBEREDITED, and @NUMBERDELETED need not be listed. -->
+		<FormMetaData xmlns="bb_appfx_commontypes">
+			<FormFields>
+				<FormField FieldID="CONSTITUENTQUERY" Caption="Constituent for Report Validation" DataType="String">
+					<SearchList SearchListID="98D0070E-C4A7-495B-A438-2AC12DA79068">
+						<FormFieldOverrides>
+							<FormFieldOverride FieldID="RecordType" DefaultValueText="Constituent" ReadOnly="1"  />
+						</FormFieldOverrides>
+					</SearchList>
+				</FormField>
+				<FormField FieldID="APIKEY" Caption="ChatGPT API Key" DataType="String"/>
+			</FormFields>
+		</FormMetaData>
+
+	</ParametersFormMetaData>
+	
+</GlobalChangeSpec>

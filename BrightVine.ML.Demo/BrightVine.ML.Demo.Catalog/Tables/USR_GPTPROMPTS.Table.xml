@@ -1,0 +1,17 @@
+﻿<TableSpec 
+	xmlns="bb_appfx_table"
+	xmlns:c="bb_appfx_commontypes" 
+	ID="8bad359e-fe0e-4bb9-8600-16a493b2f2ed"
+	Name="USR_GPTPROMPTS"
+	Description="Stores information about usr gptprompts records"
+	Author="BrightVine Solutions"
+	Tablename="USR_GPTPROMPTS"		   
+	IsBuiltIn="false"
+	>
+
+	<!-- define fields on the table -->
+	<Fields>
+		<TextField Length="4000" Name="PROMPT"/>
+	</Fields>
+
+</TableSpec>

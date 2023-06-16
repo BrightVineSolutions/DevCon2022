@@ -8,6 +8,10 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using static Microsoft.ML.DataOperationsCatalog;
+using System.Collections.Generic;
+using System.Globalization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace BrightVine.ML.Demo
 {
@@ -144,11 +148,11 @@ namespace BrightVine.ML.Demo
                             string interactionSentiment;
                             if (interactionSentimentObject.Prediction)
                             {
-                                interactionSentiment = "Postive sentiment with a probability of " + interactionSentimentObject.Probability.ToString("#0.##%");
+                                interactionSentiment = "Negtive sentiment with a probability of " + interactionSentimentObject.Probability.ToString("#0.##%");
                             }
                             else
                             {
-                                interactionSentiment = "Negative sentiment with a probability of " + (1 - interactionSentimentObject.Probability).ToString("#0.##%");
+                                interactionSentiment = "Positive sentiment with a probability of " + (1 - interactionSentimentObject.Probability).ToString("#0.##%");
                             }
 
                             SaveInteractionSentiment(InterationId, interactionSentiment);

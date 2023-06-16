@@ -1,0 +1,36 @@
+﻿<SQLStoredProcedureSpec
+	xmlns="bb_appfx_sqlstoredprocedure"
+	xmlns:c="bb_appfx_commontypes"
+	ID="1B3409F6-AB0E-4AF9-A5C6-E8E67518E940"
+	Name="USR_USP_LOADCONTACTREPORTS"
+	Description="USR_USP_LOADCONTACTREPORTS"
+	Author="BrightVine Solutions"
+	SPName="USR_USP_LOADCONTACTREPORTS"
+  GrantServiceRolePermission="true"
+	>
+
+	<CreateProcedureSQL>
+		<![CDATA[
+      create procedure DBO.USR_USP_LOADCONTACTREPORTS (
+        @PROCESSID uniqueidentifier = null
+      )
+      as
+        begin
+SELECT
+  I.ID,
+ 
+  STUFF((
+    SELECT ' ' + PROMPT
+    FROM USR_GPTPROMPTS
+    FOR XML PATH(''), TYPE).value('.', 'nvarchar(MAX)'), 1, 1, '') + i.OBJECTIVE AS CONTACTREPORT
+FROM
+  [dbo].[INTERACTION] AS I
+WHERE
+  I.ISCONTACTREPORT = 1
+  AND I.ID = 'FBBBBA05-7D0D-4898-A27B-57CB39705F6C';
+
+
+        end 
+		]]>
+	</CreateProcedureSQL>
+</SQLStoredProcedureSpec>

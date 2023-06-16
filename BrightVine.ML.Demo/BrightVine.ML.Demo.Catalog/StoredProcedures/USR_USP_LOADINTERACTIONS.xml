@@ -18,7 +18,7 @@
         begin
             select ID, OBJECTIVE SENTIMENTTEXT
             from   [dbo].[INTERACTION]
-            where ISINTERACTION=1;
+            where ISINTERACTION=1
         end 
 		]]>
   </CreateProcedureSQL>

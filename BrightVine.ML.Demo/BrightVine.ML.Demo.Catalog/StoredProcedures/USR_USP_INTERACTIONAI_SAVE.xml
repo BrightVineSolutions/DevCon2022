@@ -1,0 +1,65 @@
+﻿<SQLStoredProcedureSpec
+	xmlns="bb_appfx_sqlstoredprocedure"
+	xmlns:c="bb_appfx_commontypes" 
+	ID="4e4c239b-1272-44c3-9068-0b62a4b7eb49"
+	Name="USR_USP_INTERACTIONAI_SAVE"
+	Description="USR_USP_INTERACTIONAI_SAVE"
+	Author="BrightVine Solutions"
+	SPName="USR_USP_INTERACTIONAI_SAVE"
+	>
+
+	<CreateProcedureSQL>
+		<![CDATA[
+create procedure dbo.USR_USP_INTERACTIONAI_SAVE
+      @ID            uniqueidentifier = null,
+      @AITEXT nvarchar(max) = ''
+    as
+      begin
+          set NOCOUNT on;
+
+          declare @CHANGEAGENTID uniqueidentifier;
+          declare @CURRENTDATE datetime = GETDATE();
+
+          if @CHANGEAGENTID is null
+            exec DBO.USP_CHANGEAGENT_GETORCREATECHANGEAGENT
+              @CHANGEAGENTID OUTPUT;
+
+          begin TRY
+              update INTERACTIONNOTE
+              set    [HTMLNOTE] = @AITEXT
+              where  INTERACTIONID = @ID and title = 'GPT Validation'
+
+              if @@rowcount = 0
+                insert into [dbo].[INTERACTIONNOTE]
+                            ([ID],
+							 [INTERACTIONID],
+							 [INTERACTIONNOTETYPECODEID],                             
+                             [TITLE],
+							 [HTMLNOTE],
+							 [DATEENTERED],
+                             [ADDEDBYID],
+                             [CHANGEDBYID],
+                             [DATEADDED],
+                             [DATECHANGED])
+                values      ( newid(),
+				              @ID,
+							  'AA06503F-6EF0-47FC-A373-91E24C3202F6',
+							  'GPT Validation',
+                              @AITEXT,
+                              @CURRENTDATE,
+                              @CHANGEAGENTID,
+                              @CHANGEAGENTID,
+                              @CURRENTDATE,
+                              @CURRENTDATE )
+          end TRY
+          begin CATCH
+              exec DBO.USP_RAISE_ERROR
+              return 1
+          end CATCH
+
+          return 0;
+      end 
+		]]>
+	</CreateProcedureSQL>
+
+</SQLStoredProcedureSpec>
